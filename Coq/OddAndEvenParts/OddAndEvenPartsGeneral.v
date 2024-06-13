@@ -29,14 +29,17 @@ Section FieldProperties.
   Context {eq_refl : forall x : F, x = x}.
   Context {eq_sym : forall x y : F, x = y -> y = x}.
   Context {eq_trans : forall x y z : F, x = y -> y = z -> x = z}.
+  Context {neq_1_0 : 1 <> 0}.
+  Context {neq_2_0 : 2 <> 0}.
   Context {add_comm : forall x y : F, (x + y) = (y + x)}.
-  Context {add_assoc : forall x y z : F, (x + (y + z)) = ((x + y) + z)}.
+  Context {add_assoc : forall x y z : F, ((x + y) + z) = (x + (y + z))}.
   Context {add_0_l : forall x : F, (0 + x) = x}.
   Context {add_0_r : forall x : F, x + 0 = x}.
   Context {add_opp_r : forall x : F, x + (- x) = 0}.
   Context {mul_comm : forall x y : F, (x * y) = (y * x)}.
   Context {mul_assoc : forall x y z : F, (x * (y * z)) = ((x * y) * z)}.
   Context {mul_1_l : forall x : F, (1 * x) = x}.
+  Context {mul_1_r : forall x : F, (x * 1) = x}.
   Context {mul_add_distr_l : forall x y z : F, (x * (y + z)) = ((x * y) + (x * z))}.
   Context {mul_add_distr_r : forall x y z : F, (x + y) * z = (x * z) + (y * z)}.
   Context {sub_def : forall x y : F, (x - y) = (x + (- y))}.
@@ -99,15 +102,14 @@ Section FieldProperties.
       f x = (f x * /2 + f (- x) * /2) + (f x * /2 - f (- x) * /2)
     *)
     
-    (* DO SOMETHING HERE *)
-    (* unfold Rminus.
+    rewrite sub_def.
     (*
       f x = f x * /2 + f (- x) * /2 + (f x * /2 + - (f (- x) * /2))
     *)
 
-    rewrite <- add_assoc with (r1 := f x * /2 + f (- x) * /2) (r2 := f x * /2) (r3 := - (f (- x) * /2)).
-    rewrite add_assoc with (r1 := f x * /2) (r2 := f (- x) * /2) (r3 := f x * /2).
-    rewrite add_comm with (r1 := f (- x) * /2) (r2 := f x * /2).
+    rewrite <- add_assoc with (x := f x * /2 + f (- x) * /2) (y := f x * /2) (z := - (f (- x) * /2)).
+    rewrite add_assoc with (x := f x * /2) (y := f (- x) * /2) (z := f x * /2).
+    rewrite add_comm with (x := f (- x) * /2) (y := f x * /2).
     rewrite add_assoc.
     rewrite add_assoc.
     rewrite add_opp_r.
@@ -116,19 +118,16 @@ Section FieldProperties.
       f x = f x * / 2 + f x * / 2
     *)
 
-    rewrite <- mul_add_distr_r with (r1 := f x) (r2 := /2).
-    rewrite <- mul_1_l with (r := /2).
+    rewrite <- mul_add_distr_l with (x := f x) (y := /2) (z := /2).
+    rewrite <- mul_1_l with (x := /2).
     rewrite <- mul_add_distr_r.
-    replace (1+1) with 2 by reflexivity.
-    rewrite inv_mul by (apply Rgt_not_eq; apply Rlt_gt; apply Rlt_0_2).
+    rewrite inv_mul by apply neq_2_0.
     rewrite mul_1_r.
     (*
       f x = f x
     *)
 
     reflexivity.
-  Qed. *)
-  admit.
-Admitted.
+  Qed.
 
 End FieldProperties.
