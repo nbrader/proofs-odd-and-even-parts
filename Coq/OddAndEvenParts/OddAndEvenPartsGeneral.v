@@ -47,7 +47,6 @@ Section FieldProperties.
   Context {opp_involutive : forall x : F, - (- x) = x}.
   Context {div_def : forall x y : F, (x / y) = (x * (/ y))}.
   Context {inv_mul : forall x : F, ~ x = 0 -> (x * (/ x)) = 1}.
-  Context {inv_0 : / 0 = 0}.
   Context {mul_sub_distr_r : forall r1 r2 r3 : F, (r2 - r3) * r1 = (r2 * r1) - (r3 * r1)}.
   Context {opp_sub_distr : forall r1 r2 : F, - (r1 - r2) = r2 - r1}.
 
