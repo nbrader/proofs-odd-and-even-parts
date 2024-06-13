@@ -1,17 +1,9 @@
-Require Import Coq.Program.Basics.
-Require Import Coq.Program.Combinators.
-Require Import Coq.setoid_ring.Field_theory.
-Require Import Coq.setoid_ring.Ring_theory.
-
-Section FieldProperties.
-
   Context {F : Type}.
   Context {zero one : F}.
   Context {add mul sub : F -> F -> F}.
   Context {opp inv : F -> F}.
   Context {div : F -> F -> F}.
 
-  (* Declare notation and scope for the field *)
   Declare Scope field_scope.
   Notation "0" := zero : field_scope.
   Notation "1" := one : field_scope.
@@ -20,37 +12,24 @@ Section FieldProperties.
   Notation "x * y" := (mul x y) : field_scope.
   Notation "x - y" := (sub x y) : field_scope.
   Notation "- x" := (opp x) : field_scope.
-  Notation "x / y" := (div x y) : field_scope.
   Notation "/ x" := (inv x) : field_scope.
-  Delimit Scope field_scope with F.
 
   Open Scope field_scope.
 
-  Context {eq_refl : forall x : F, x = x}.
-  Context {eq_sym : forall x y : F, x = y -> y = x}.
-  Context {eq_trans : forall x y z : F, x = y -> y = z -> x = z}.
-  Context {neq_1_0 : 1 <> 0}.
   Context {neq_2_0 : 2 <> 0}.
   Context {add_comm : forall x y : F, (x + y) = (y + x)}.
   Context {add_assoc : forall x y z : F, ((x + y) + z) = (x + (y + z))}.
-  Context {add_0_l : forall x : F, (0 + x) = x}.
   Context {add_0_r : forall x : F, x + 0 = x}.
   Context {add_opp_r : forall x : F, x + (- x) = 0}.
-  Context {mul_comm : forall x y : F, (x * y) = (y * x)}.
-  Context {mul_assoc : forall x y z : F, (x * (y * z)) = ((x * y) * z)}.
   Context {mul_1_l : forall x : F, (1 * x) = x}.
   Context {mul_1_r : forall x : F, (x * 1) = x}.
   Context {mul_add_distr_l : forall x y z : F, (x * (y + z)) = ((x * y) + (x * z))}.
   Context {mul_add_distr_r : forall x y z : F, (x + y) * z = (x * z) + (y * z)}.
   Context {sub_def : forall x y : F, (x - y) = (x + (- y))}.
-  Context {opp_def : forall x : F, (x + (- x)) = 0}.
   Context {opp_involutive : forall x : F, - (- x) = x}.
-  Context {div_def : forall x y : F, (x / y) = (x * (/ y))}.
   Context {inv_mul : forall x : F, ~ x = 0 -> (x * (/ x)) = 1}.
   Context {mul_sub_distr_r : forall r1 r2 r3 : F, (r2 - r3) * r1 = (r2 * r1) - (r3 * r1)}.
   Context {opp_sub_distr : forall r1 r2 : F, - (r1 - r2) = r2 - r1}.
-
-  Context {F_field_theory : field_theory zero one add mul sub opp div inv eq}.
 
   (* Definitions of even and odd parts for functions over a field *)
   Definition evenPart (f : F -> F) : F -> F := fun x => (f x + f (- x)) * / 2.
@@ -128,5 +107,3 @@ Section FieldProperties.
 
     reflexivity.
   Qed.
-
-End FieldProperties.
