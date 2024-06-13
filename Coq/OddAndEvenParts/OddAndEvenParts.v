@@ -71,7 +71,7 @@ Proof.
     f x = f x * / 2 + f x * / 2
   *)
 
-  rewrite <- Rmult_plus_distr_l with (r1 := f x) (r2 := /2).
+  rewrite <- Rmult_plus_distr_l with (r1 := f x) (r2 := /2) (r3 := /2).
   rewrite <- Rmult_1_l with (r := /2).
   rewrite <- Rmult_plus_distr_r.
   replace (1+1) with 2 by reflexivity.
