@@ -263,26 +263,26 @@ Module ApplyFiniteFieldModulo3.
   Definition poly1 (x : F) : F := add (mul x x) x.
 
   (* Apply the theorems to the finite field modulo 3 *)
-  Compute (evenPart F F0 F3add F3mul F3opp F3inv poly1 F0).
+  Compute (evenPart F F0 add mul opp inv poly1 F0).
   (* F0 *)
 
-  Compute (oddPart F F0 F3add F3mul F3sub F3opp F3inv poly1 F0).
+  Compute (oddPart F F0 add mul sub opp inv poly1 F0).
   (* F0 *)
 
-  Compute (evenPart F F0 F3add F3mul F3opp F3inv poly1 F1).
+  Compute (evenPart F F0 add mul opp inv poly1 F1).
   (* F0 *)
 
-  Compute (oddPart F F0 F3add F3mul F3sub F3opp F3inv poly1 F1).
+  Compute (oddPart F F0 add mul sub opp inv poly1 F1).
   (* F0 *)
 
-  Compute (evenPart F F0 F3add F3mul F3opp F3inv poly1 F2).
+  Compute (evenPart F F0 add mul opp inv poly1 F2).
   (* F0 *)
 
-  Compute (oddPart F F0 F3add F3mul F3sub F3opp F3inv poly1 F2).
+  Compute (oddPart F F0 add mul sub opp inv poly1 F2).
   (* F0 *)
 
   (* Example to verify the sum of even and odd parts equals the original polynomial *)
-  Example poly_even_odd_sum : forall x : F, poly1 x = F3add (evenPart F F0 F3add F3mul F3opp F3inv poly1 x) (oddPart F F0 F3add F3mul F3sub F3opp F3inv poly1 x).
+  Example poly_even_odd_sum : forall x : F, poly1 x = add (evenPart F F0 add mul opp inv poly1 x) (oddPart F F0 add mul sub opp inv poly1 x).
   Proof.
     intros x.
     unfold evenPart, oddPart.
