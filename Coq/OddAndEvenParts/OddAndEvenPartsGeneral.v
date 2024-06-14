@@ -1,48 +1,56 @@
 Require Import Coq.ZArith.ZArith.
 Open Scope Z_scope.
 
-Section ThreeValuedField.
+Section FiniteFieldModulo3.
 
-  (* Define the type F as integers with values restricted to -1, 0, and 1 *)
-  Inductive TV : Type :=
-    | TVn : TV (* -1 *)
-    | TVz : TV (* 0 *)
-    | TVp : TV (* 1 *).
+  (* Define the type F as integers with values restricted to 0, 1, and 2 *)
+  Inductive F3 : Type :=
+    | F0 : F3 (* 0 *)
+    | F1 : F3 (* 1 *)
+    | F2 : F3 (* 2 *).
 
-  (* Define the max operation as the add function *)
-  Definition TVadd (x y : TV) : TV :=
+  (* Define the addition operation modulo 3 *)
+  Definition F3add (x y : F3) : F3 :=
     match x, y with
-    | TVp, _ => TVp
-    | _, TVp => TVp
-    | TVz, _ => y
-    | _, TVz => x
-    | TVn, TVn => TVn
+    | F0, y => y
+    | x, F0 => x
+    | F1, F1 => F2
+    | F1, F2 => F0
+    | F2, F1 => F0
+    | F2, F2 => F1
     end.
 
-  (* Define the min operation as the mul function *)
-  Definition TVmul (x y : TV) : TV :=
+  (* Define the multiplication operation modulo 3 *)
+  Definition F3mul (x y : F3) : F3 :=
     match x, y with
-    | TVp, TVp => TVp
-    | TVn, TVn => TVp
-    | TVz, _ => TVz
-    | _, TVz => TVz
-    | TVp, TVn => TVn
-    | TVn, TVp => TVn
+    | F0, _ => F0
+    | _, F0 => F0
+    | F1, y => y
+    | x, F1 => x
+    | F2, F2 => F1
     end.
 
-  Definition TVopp (x : TV) : TV :=
+  (* Define the negation operation modulo 3 *)
+  Definition F3opp (x : F3) : F3 :=
     match x with
-    | TVp => TVn
-    | TVz => TVz
-    | TVn => TVp
+    | F0 => F0
+    | F1 => F2
+    | F2 => F1
     end.
 
-  Definition TVinv (x : TV) : TV := x.
+  (* Define the inversion operation modulo 3 *)
+  Definition F3inv (x : F3) : F3 :=
+    match x with
+    | F0 => F0 (* Not defined, but here represented as F0 *)
+    | F1 => F1
+    | F2 => F2
+    end.
 
-  Definition TVsub (x y : TV) : TV := TVadd x (TVopp y).
+  Definition F3sub (x y : F3) : F3 := F3add x (F3opp y).
 
-  Definition TVdiv (x y : TV) : TV := TVmul x (TVinv y).
+  Definition F3div (x y : F3) : F3 := F3mul x (F3inv y).
 
+  (* Redefine the field structure *)
   Variable F : Type.
   Variable zero one : F.
   Variable add mul sub : F -> F -> F.
@@ -153,25 +161,25 @@ Section ThreeValuedField.
     reflexivity.
   Qed.
 
-End ThreeValuedField.
+End FiniteFieldModulo3.
 
-(* Assign F to TV and use theorems *)
-Module ApplyThreeValuedField.
+(* Assign F to F3 and use theorems *)
+Module ApplyFiniteFieldModulo3.
 
-  (* Instantiating the field with the three-valued number system *)
-  Definition F := TV.
-  Definition zero := TVz.
-  Definition one := TVp.
-  Definition add := TVadd.
-  Definition mul := TVmul.
-  Definition sub := TVsub.
-  Definition opp := TVopp.
-  Definition inv := TVinv.
-  Definition div := TVdiv.
+  (* Instantiating the field with the finite field modulo 3 *)
+  Definition F := F3.
+  Definition zero := F0.
+  Definition one := F1.
+  Definition add := F3add.
+  Definition mul := F3mul.
+  Definition sub := F3sub.
+  Definition opp := F3opp.
+  Definition inv := F3inv.
+  Definition div := F3div.
 
-  Definition neq_2_0 : (TVadd TVp TVp) <> TVz.
+  Definition neq_2_0 : (F3add F1 F1) <> F0.
   Proof.
-    unfold TVadd. discriminate.
+    unfold F3add. discriminate.
   Qed.
 
   Declare Scope field_scope.
@@ -188,82 +196,82 @@ Module ApplyThreeValuedField.
 
   Definition add_comm : forall x y : F, (x + y) = (y + x).
   Proof.
-    intros. unfold add, TVadd. destruct x, y; reflexivity.
+    intros. unfold add, F3add. destruct x, y; reflexivity.
   Qed.
 
   Definition add_assoc : forall x y z : F, ((x + y) + z) = (x + (y + z)).
   Proof.
-    intros. unfold add, TVadd. destruct x, y, z; reflexivity.
+    intros. unfold add, F3add. destruct x, y, z; reflexivity.
   Qed.
 
   Definition add_0_r : forall x : F, x + 0 = x.
   Proof.
-    intros. unfold add, zero, TVadd. destruct x; reflexivity.
+    intros. unfold add, zero, F3add. destruct x; reflexivity.
   Qed.
 
-  (* Definition add_opp_r : forall x : F, x + (- x) = 0.
+  Definition add_opp_r : forall x : F, x + (- x) = 0.
   Proof.
-    intros. unfold add, opp, zero, TVadd, TVopp. destruct x; reflexivity.
-  Qed. *)
+    intros. unfold add, opp, zero, F3add, F3opp. destruct x; reflexivity.
+  Qed.
 
   Definition mul_1_l : forall x : F, (1 * x) = x.
   Proof.
-    intros. unfold mul, one, TVmul. destruct x; reflexivity.
+    intros. unfold mul, one, F3mul. destruct x; reflexivity.
   Qed.
 
   Definition mul_1_r : forall x : F, (x * 1) = x.
   Proof.
-    intros. unfold mul, one, TVmul. destruct x; reflexivity.
+    intros. unfold mul, one, F3mul. destruct x; reflexivity.
   Qed.
 
-  (* Definition mul_add_distr_l : forall x y z : F, (x * (y + z)) = ((x * y) + (x * z)).
+  Definition mul_add_distr_l : forall x y z : F, (x * (y + z)) = ((x * y) + (x * z)).
   Proof.
-    intros. unfold mul, add, TVmul, TVadd. destruct x, y, z; reflexivity.
-  Qed. *)
+    intros. unfold mul, add, F3mul, F3add. destruct x, y, z; reflexivity.
+  Qed.
 
-  (* Definition mul_add_distr_r : forall x y z : F, (x + y) * z = (x * z) + (y * z).
+  Definition mul_add_distr_r : forall x y z : F, (x + y) * z = (x * z) + (y * z).
   Proof.
-    intros. unfold mul, add, TVmul, TVadd. destruct x, y, z; reflexivity.
-  Qed. *)
+    intros. unfold mul, add, F3mul, F3add. destruct x, y, z; reflexivity.
+  Qed.
 
   Definition sub_def : forall x y : F, (x - y) = (x + (- y)).
   Proof.
-    intros. unfold sub, add, opp, TVsub, TVadd, TVopp. reflexivity.
+    intros. unfold sub, add, opp, F3sub, F3add, F3opp. reflexivity.
   Qed.
 
   Definition opp_involutive : forall x : F, - (- x) = x.
   Proof.
-    intros. unfold opp, TVopp. destruct x; reflexivity.
+    intros. unfold opp, F3opp. destruct x; reflexivity.
   Qed.
 
   Definition inv_mul : forall x : F, ~ x = zero -> (x * (/ x)) = one.
   Proof.
-    intros. unfold mul, inv, one, TVmul, TVinv. destruct x; try contradiction; reflexivity.
+    intros. unfold mul, inv, one, F3mul, F3inv. destruct x; try contradiction; reflexivity.
   Qed.
 
-  (* Definition mul_sub_distr_r : forall r1 r2 r3 : F, (r2 - r3) * r1 = (r2 * r1) - (r3 * r1).
+  Definition mul_sub_distr_r : forall r1 r2 r3 : F, (r2 - r3) * r1 = (r2 * r1) - (r3 * r1).
   Proof.
-    intros. unfold mul, sub, TVmul, TVsub, TVadd, TVopp. destruct r1, r2, r3; reflexivity.
-  Qed. *)
+    intros. unfold mul, sub, F3mul, F3sub, F3add, F3opp. destruct r1, r2, r3; reflexivity.
+  Qed.
 
-  (* Definition opp_sub_distr : forall r1 r2 : F, - (r1 - r2) = r2 - r1.
+  Definition opp_sub_distr : forall r1 r2 : F, - (r1 - r2) = r2 - r1.
   Proof.
-    intros. unfold sub, opp, TVsub, TVadd, TVopp. destruct r1, r2; reflexivity.
-  Qed. *)
+    intros. unfold sub, opp, F3sub, F3add, F3opp. destruct r1, r2; reflexivity.
+  Qed.
 
   (* Define a polynomial function f(x) = x^3 + x *)
   Definition poly1 (x : F) : F := add (mul (mul x x) x) x.
 
-  (* Apply the theorems to the three-valued number system *)
-  Compute (evenPart _ _ _ _ _ _ poly1 TVn).
-  Compute (oddPart _ _ _ _ _ _ _ poly1 TVn).
-  Compute (evenPart _ _ _ _ _ _ poly1 TVz).
-  Compute (oddPart _ _ _ _ _ _ _ poly1 TVz).
-  Compute (evenPart _ _ _ _ _ _ poly1 TVp).
-  Compute (oddPart _ _ _ _ _ _ _ poly1 TVp).
+  (* Apply the theorems to the finite field modulo 3 *)
+  Compute (evenPart _ _ _ _ _ _ poly1 F0).
+  Compute (oddPart _ _ _ _ _ _ _ poly1 F0).
+  Compute (evenPart _ _ _ _ _ _ poly1 F1).
+  Compute (oddPart _ _ _ _ _ _ _ poly1 F1).
+  Compute (evenPart _ _ _ _ _ _ poly1 F2).
+  Compute (oddPart _ _ _ _ _ _ _ poly1 F2).
 
   (* Example to verify the sum of even and odd parts equals the original polynomial *)
-  (* Example poly_even_odd_sum : forall x : F, poly1 x = TVadd (evenPart _ _ _ _ _ _ poly1 x) (oddPart _ _ _ _ _ _ _ poly1 x).
+  Example poly_even_odd_sum : forall x : F, poly1 x = F3add (evenPart _ _ _ _ _ _ poly1 x) (oddPart _ _ _ _ _ _ _ poly1 x).
   Proof.
     intros x.
     unfold evenPart, oddPart.
@@ -277,6 +285,6 @@ Module ApplyThreeValuedField.
     rewrite add_0_r.
     rewrite mul_1_l.
     reflexivity.
-  Qed. *)
+  Qed.
 
-End ApplyThreeValuedField.
+End ApplyFiniteFieldModulo3.
