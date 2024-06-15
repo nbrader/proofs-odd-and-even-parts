@@ -125,7 +125,7 @@ Section FiniteFieldModulo3.
     - apply H.
   Qed.
 
-  Lemma neg_1_sqr : (- (1)) * (- (1)) = (1).
+  Lemma neg_1_sqr : - (1) * - (1) = 1.
   Proof.
     rewrite <- mul_inv with (x := -(1)) at 3.
     - f_equal.
