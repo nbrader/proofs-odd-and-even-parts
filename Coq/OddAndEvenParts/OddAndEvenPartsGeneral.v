@@ -68,21 +68,42 @@ Section FiniteFieldModulo3.
   Notation "/ x" := (inv x) : field_scope.
 
   Open Scope field_scope.
-
-  Variable neq_2_0 : 2 <> 0.
-  Variable add_comm : forall x y : F, (x + y) = (y + x).
-  Variable add_assoc : forall x y z : F, ((x + y) + z) = (x + (y + z)).
+  
+  Variable add_assoc : forall x y z : F, (x + y) + z = x + (y + z).
   Variable add_0_r : forall x : F, x + 0 = x.
   Variable add_opp_r : forall x : F, x + (- x) = 0.
-  Variable mul_1_l : forall x : F, (1 * x) = x.
-  Variable mul_1_r : forall x : F, (x * 1) = x.
-  Variable mul_add_distr_l : forall x y z : F, (x * (y + z)) = ((x * y) + (x * z)).
-  Variable mul_add_distr_r : forall x y z : F, (x + y) * z = (x * z) + (y * z).
-  Variable sub_def : forall x y : F, (x - y) = (x + (- y)).
-  Variable opp_involutive : forall x : F, - (- x) = x.
-  Variable inv_mul : forall x : F, ~ x = 0 -> (x * (/ x)) = 1.
-  Variable mul_sub_distr_r : forall r1 r2 r3 : F, (r2 - r3) * r1 = (r2 * r1) - (r3 * r1).
+  Variable add_comm : forall x y : F, x + y = y + x.
+  Variable mul_1_l : forall x : F, 1 * x = x.
+  Variable mul_1_r : forall x : F, x * 1 = x.
+  Variable inv_mul : forall x : F, x <> 0 -> x * (/ x) = 1.
+  Variable mul_add_distr_l : forall x y z : F, x * (y + z) = (x * y) + (x * z).
+  Variable mul_add_distr_r : forall x y z : F, (x + y) * z = x * z + y * z.
+  Variable sub_def : forall x y : F, x - y = x + (- y).
+  Variable mul_sub_distr_r : forall r1 r2 r3 : F, (r2 - r3)*r1 = r2 * r1 - r3 * r1.
   Variable opp_sub_distr : forall r1 r2 : F, - (r1 - r2) = r2 - r1.
+
+  Variable neq_2_0 : 2 <> 0.
+
+  Lemma add_0_l : forall x : F, 0 + x = x.
+  Proof.
+    intro.
+    rewrite add_comm.
+    rewrite add_0_r.
+    reflexivity.
+  Qed.
+
+  Lemma opp_involutive : forall x : F, - (- x) = x.
+  Proof.
+    intro.
+    rewrite <- add_0_r with (x := --x).
+    rewrite <- add_opp_r with (x := x).
+    rewrite add_comm with (x := x) (y := -x).
+    rewrite <- add_assoc with (x := --x) (y := -x) (z := x).
+    rewrite add_comm with (x := --x) (y := -x).
+    rewrite add_opp_r with (x := -x).
+    rewrite add_0_l.
+    reflexivity.
+  Qed.
 
   (* Definitions of even and odd parts for functions over a field *)
   Definition evenPart (f : F -> F) : F -> F := fun x => (f x + f (- x)) * / 2.
@@ -284,7 +305,7 @@ Module ApplyFiniteFieldModulo3.
   (* Example to verify the sum of even and odd parts equals the original polynomial *)
   Example poly_even_odd_sum : forall x : F, poly1 x = add (evenPart F F1 add mul opp inv poly1 x) (oddPart F F1 add mul sub opp inv poly1 x).
   Proof.
-    apply (fIsEvenPlusOdd F F0 F1 add mul sub opp inv neq_2_0 add_comm add_assoc add_0_r add_opp_r mul_1_l mul_1_r mul_add_distr_l mul_add_distr_r sub_def inv_mul mul_sub_distr_r poly1).
+    apply (fIsEvenPlusOdd F F0 F1 add mul sub opp inv add_assoc add_0_r add_opp_r add_comm mul_1_l mul_1_r inv_mul mul_add_distr_l mul_add_distr_r sub_def mul_sub_distr_r neq_2_0 poly1).
   Qed.
 
 End ApplyFiniteFieldModulo3.
