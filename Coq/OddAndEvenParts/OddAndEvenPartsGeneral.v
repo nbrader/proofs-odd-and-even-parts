@@ -109,6 +109,18 @@ Section FiniteFieldModulo3.
   Definition mul_assoc := forall x y z : F, (x * y) * z = x * (y * z).
   Definition mul_inv_nonzero := forall x : F, x <> 0 -> /x <> 0.
 
+  Lemma mul_inv_unique (Hmul_assoc : mul_assoc) : forall x y : F, x <> 0 -> y * x = 1 -> y = /x.
+  Proof.
+    intros.
+    rewrite <- mul_1_r with (x := y).
+    rewrite <- mul_inv with (x := x).
+    - rewrite <- Hmul_assoc with (x := y) (y := x) (z := /x).
+      rewrite H0.
+      rewrite mul_1_l.
+      reflexivity.
+    - apply H.
+  Qed.
+
   Lemma mul_inv_involutive (Hmul_comm : mul_comm) (Hmul_assoc : mul_assoc) (Hmul_inv_nonzero : mul_inv_nonzero) : forall x : F, x <> 0 -> //x = x.
   Proof.
     intros.
@@ -125,12 +137,13 @@ Section FiniteFieldModulo3.
     - apply H.
   Qed.
 
+(* 
   Lemma neg_1_sqr : - (1) * - (1) = 1.
   Proof.
     rewrite <- mul_inv with (x := -(1)) at 3.
     - f_equal.
       rewrite <- mul_1_l.
- Admitted.
+ Admitted. *)
 
   (* Definitions of even and odd parts for functions over a field *)
   Definition evenPart (f : F -> F) : F -> F := fun x => (f x + f (- x)) * / 2.
