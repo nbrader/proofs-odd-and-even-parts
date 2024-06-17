@@ -493,7 +493,7 @@ Module ApplyFiniteFieldModulo3.
   Qed.
 
   (* Example to verify the sum of even and odd parts equals the original polynomial *)
-  Example poly_even_odd_sum : forall x : F, poly1 x = add (evenPart F F1 add mul add_inv inv poly1 x) (oddPart F F1 add mul sub add_inv inv poly1 x).
+  Example poly_even_odd_sum : forall x : F, poly1 x = add (evenPart F 1 add mul add_inv inv poly1 x) (oddPart F 1 add mul sub add_inv inv poly1 x).
   Proof.
     apply (fIsEvenPlusOdd F 0 1 add mul sub add_inv inv add_assoc add_0_r add_inv_r add_comm mul_1_l mul_1_r mul_inv mul_add_distr_l mul_add_distr_r sub_def mul_sub_distr_r neq_2_0 poly1).
   Qed.
