@@ -221,55 +221,33 @@ Section FiniteFieldModulo3.
       reflexivity.
   Qed.
 
-  Lemma add_involutive_0 : forall x : F, x = -x <-> x = 0.
+  Lemma add_idemp_0 : forall x : F, x + x = x -> x = 0.
   Proof.
     intros.
-    split.
-    - intros.
-      apply add_perserves_add_l with (x := x) (y := -x) (z := x) in H.
-      rewrite add_inv_r in H.
-      rewrite <- H.
-      rewrite <- mul_1_r with (x := x).
-      rewrite <- mul_add_distr_l.
-      admit.
-    - intros.
-      rewrite H.
-      rewrite <- add_0_l.
-      rewrite add_inv_r.
-      reflexivity.
-  Admitted.
+    rewrite <- add_perserves_add_r with (x := x+x) (y := x) (z := -x) in H.
+    rewrite add_assoc in H.
+    rewrite add_inv_r in H.
+    rewrite add_0_r in H.
+    apply H.
+  Qed.
+
+  Lemma add_involutive_0_r : forall x : F, x = 0 -> x = -x.
+  Proof.
+    intros.
+    rewrite H.
+    rewrite <- add_0_l.
+    rewrite add_inv_r.
+    reflexivity.
+  Qed.
 
   Lemma mul_0_r : forall x : F, x*0 = 0.
   Proof.
     intros.
-    rewrite <- add_0_r with (x := 0) at 1.
-    rewrite mul_add_distr_l.
-    assert (x*0 = -(x*0)).
-    - apply add_inv_unique with (x := x*0) (y := x*0).
-  Admitted.
-
-  Lemma mul_0_r1 : forall x : F, x*0 = 0.
-  Proof.
-    intros.
-    rewrite <- add_inv_r with (x := 1) at 1.
-    rewrite mul_add_distr_l.
-    rewrite mul_1_r.
-    apply add_0_unique.
-    intros.
-    apply H.
-    intros.
-    
-  Admitted.
-
-  Lemma mul_0_r2 : forall x : F, x*0 = 0.
-  Proof.
-    intros.
-    specialize (add_0_unique (x*0)).
-    intros.
-    apply H.
-    intros.
-    
-  Admitted.
+    apply add_idemp_0.
+    rewrite <- mul_add_distr_l.
+    rewrite add_0_l.
+    reflexivity.
+  Qed.
 
   Lemma mul_neg_1_inv : forall x : F, x*-(1) = -x.
   Proof.
@@ -282,7 +260,7 @@ Section FiniteFieldModulo3.
     apply mul_0_r.
   Qed.
 
-  Lemma neg_1_sqr (Hmul_assoc : mul_assoc) : - (1) * - (1) = 1.
+  Lemma neg_1_sqr : - (1) * - (1) = 1.
   Proof.
     rewrite <- add_0_r at 1.
     rewrite <- add_inv_r with (x := -(1)).
