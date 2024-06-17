@@ -451,18 +451,51 @@ Module ApplyFiniteFieldModulo3.
   Qed.
 
   (* Define a polynomial function f(x) = x^2 + x *)
-  Definition poly1 (x : F) : F := add (mul x x) x.
+  Definition poly1 (x : F) : F := (x * x) + x.
 
-  (* Example poly1EventPart (x : F) : evenPart F F1 add mul add_inv inv poly1 x = mul x x.
+  Lemma poly1EventPart (Hmul_comm : mul_comm F mul) (Hmul_assoc : mul_assoc F mul) (Hmul_inv_nonzero : mul_inv_nonzero F 1 inv) (x : F) : evenPart F 1 add mul add_inv inv poly1 x = x * x.
   Proof.
     unfold evenPart, poly1.
-    
-  Qed. *)
+    rewrite <- (mul_neg_1_inv F 0 1 add mul add_inv) at 1 2.
+    rewrite Hmul_assoc with (x := x) (y := -(1)) (z := (x * - (1))).
+    rewrite Hmul_comm with (x := - (1)) (y := (x * - (1))).
+    rewrite Hmul_assoc.
+    rewrite (neg_1_sqr F 0 1 add).
+    rewrite mul_1_r.
+    rewrite <- add_assoc.
+    rewrite add_assoc with (x := x * x) (y := x) (z := x * x).
+    rewrite add_comm with (x := x) (y := x * x).
+    rewrite <- add_assoc.
+    rewrite <- mul_1_r with (x := x * x) at 1 2.
+    rewrite <- mul_add_distr_l with (x := x * x).
+    rewrite add_assoc.
+    rewrite add_inv_r.
+    rewrite add_0_r.
+    rewrite Hmul_assoc.
+    rewrite mul_inv.
+    rewrite mul_1_r.
+    reflexivity.
+    apply neq_2_0.
+
+    apply add_assoc.
+    apply add_0_r.
+    apply add_inv_r.
+    apply add_comm.
+    apply mul_1_r.
+    apply mul_add_distr_l.
+
+    apply add_assoc.
+    apply add_0_r.
+    apply add_inv_r.
+    apply add_comm.
+    apply mul_1_r.
+    apply mul_add_distr_l.
+  Qed.
 
   (* Example to verify the sum of even and odd parts equals the original polynomial *)
   Example poly_even_odd_sum : forall x : F, poly1 x = add (evenPart F F1 add mul add_inv inv poly1 x) (oddPart F F1 add mul sub add_inv inv poly1 x).
   Proof.
-    apply (fIsEvenPlusOdd F F0 F1 add mul sub add_inv inv add_assoc add_0_r add_inv_r add_comm mul_1_l mul_1_r mul_inv mul_add_distr_l mul_add_distr_r sub_def mul_sub_distr_r neq_2_0 poly1).
+    apply (fIsEvenPlusOdd F 0 1 add mul sub add_inv inv add_assoc add_0_r add_inv_r add_comm mul_1_l mul_1_r mul_inv mul_add_distr_l mul_add_distr_r sub_def mul_sub_distr_r neq_2_0 poly1).
   Qed.
 
 End ApplyFiniteFieldModulo3.
