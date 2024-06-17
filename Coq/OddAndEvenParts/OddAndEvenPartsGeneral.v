@@ -81,6 +81,7 @@ Section FiniteFieldModulo3.
   Variable sub_def : forall x y : F, x - y = x + (- y).
   Variable mul_sub_distr_r : forall r1 r2 r3 : F, (r2 - r3)*r1 = r2 * r1 - r3 * r1.
   Variable add_inv_sub_distr : forall r1 r2 : F, - (r1 - r2) = r2 - r1.
+  Variable neq_1_0 : 1 <> 0.
 
   Variable neq_2_0 : 2 <> 0.
 
@@ -105,6 +106,33 @@ Section FiniteFieldModulo3.
     reflexivity.
   Qed.
 
+  Lemma add_0_unique : forall (y : F), (forall x : F, x + y = x) -> y = 0.
+  Proof.
+    intros.
+    specialize (H 0).
+    rewrite add_comm in H.
+    rewrite add_0_r in H.
+    apply H.
+  Qed.
+
+  Lemma add_0_unique_2 : forall (y : F), y = 0 -> (forall x : F, x + y = x).
+  Proof.
+    intros.
+    rewrite H.
+    apply add_0_r.
+  Qed.
+
+  Lemma add_inv_unique : forall x y : F, y + x = 0 -> y = -x.
+  Proof.
+    intros.
+    rewrite <- add_0_r with (x := y).
+    rewrite <- add_inv_r with (x := x).
+    rewrite <- add_assoc with (x := y) (y := x) (z := -x).
+    rewrite H.
+    rewrite add_0_l.
+    reflexivity.
+  Qed.
+
   Definition mul_comm := forall x y : F, x * y = y * x.
   Definition mul_assoc := forall x y z : F, (x * y) * z = x * (y * z).
   Definition mul_inv_nonzero := forall x : F, x <> 0 -> /x <> 0.
@@ -119,6 +147,26 @@ Section FiniteFieldModulo3.
       rewrite mul_1_l.
       reflexivity.
     - apply H.
+  Qed.
+
+  Lemma mul_inv_involutive_2 (Hmul_comm : mul_comm) (Hmul_assoc : mul_assoc) (Hmul_inv_nonzero : mul_inv_nonzero) : forall x : F, x <> 0 -> x = //x.
+  Proof.
+    intros.
+    assert (//x * /x = 1).
+    - rewrite <- Hmul_comm with (x := /x).
+      rewrite mul_inv with (x := /x).
+      reflexivity.
+      apply Hmul_inv_nonzero.
+      apply H.
+    - assert (x * /x = 1).
+      + apply mul_inv.
+        apply H.
+      + assert (/x <> 0).
+        * apply Hmul_inv_nonzero.
+          apply H.
+        * apply (mul_inv_unique Hmul_assoc (/x) x H2).
+          apply mul_inv.
+          apply H.
   Qed.
 
   Lemma mul_inv_involutive (Hmul_comm : mul_comm) (Hmul_assoc : mul_assoc) (Hmul_inv_nonzero : mul_inv_nonzero) : forall x : F, x <> 0 -> //x = x.
@@ -137,13 +185,117 @@ Section FiniteFieldModulo3.
     - apply H.
   Qed.
 
-(* 
-  Lemma neg_1_sqr : - (1) * - (1) = 1.
+  Lemma add_perserves_add_l : forall x y z : F, z + x = z + y <-> x = y.
   Proof.
-    rewrite <- mul_inv with (x := -(1)) at 3.
-    - f_equal.
-      rewrite <- mul_1_l.
- Admitted. *)
+    split.
+    - intros.
+      rewrite <- add_0_l with (x := x) at 1.
+      rewrite <- add_inv_r with (x := z).
+      rewrite add_comm with (x := z) (y := - z).
+      rewrite add_assoc.
+      rewrite H.
+      rewrite <- add_assoc.
+      rewrite <- add_comm with (x := z) (y := - z).
+      rewrite add_inv_r.
+      rewrite <- add_0_l.
+      reflexivity.
+    - intros.
+      rewrite H.
+      reflexivity.
+  Qed.
+
+  Lemma add_perserves_add_r : forall x y z : F, x + z = y + z <-> x = y.
+  Proof.
+    split.
+    - intros.
+      rewrite <- add_0_r with (x := x) at 1.
+      rewrite <- add_inv_r with (x := z).
+      rewrite <- add_assoc.
+      rewrite H.
+      rewrite add_assoc.
+      rewrite add_inv_r.
+      rewrite add_0_r.
+      reflexivity.
+    - intros.
+      rewrite H.
+      reflexivity.
+  Qed.
+
+  Lemma add_involutive_0 : forall x : F, x = -x <-> x = 0.
+  Proof.
+    intros.
+    split.
+    - intros.
+      apply add_perserves_add_l with (x := x) (y := -x) (z := x) in H.
+      rewrite add_inv_r in H.
+      rewrite <- H.
+      rewrite <- mul_1_r with (x := x).
+      rewrite <- mul_add_distr_l.
+      admit.
+    - intros.
+      rewrite H.
+      rewrite <- add_0_l.
+      rewrite add_inv_r.
+      reflexivity.
+  Admitted.
+
+  Lemma mul_0_r : forall x : F, x*0 = 0.
+  Proof.
+    intros.
+    rewrite <- add_0_r with (x := 0) at 1.
+    rewrite mul_add_distr_l.
+    assert (x*0 = -(x*0)).
+    - apply add_inv_unique with (x := x*0) (y := x*0).
+  Admitted.
+
+  Lemma mul_0_r1 : forall x : F, x*0 = 0.
+  Proof.
+    intros.
+    rewrite <- add_inv_r with (x := 1) at 1.
+    rewrite mul_add_distr_l.
+    rewrite mul_1_r.
+    apply add_0_unique.
+    intros.
+    apply H.
+    intros.
+    
+  Admitted.
+
+  Lemma mul_0_r2 : forall x : F, x*0 = 0.
+  Proof.
+    intros.
+    specialize (add_0_unique (x*0)).
+    intros.
+    apply H.
+    intros.
+    
+  Admitted.
+
+  Lemma mul_neg_1_inv : forall x : F, x*-(1) = -x.
+  Proof.
+    intros.
+    apply add_perserves_add_l with (x := x * -(1)) (y := -x) (z := x).
+    rewrite <- mul_1_r with (x := x) at 1.
+    rewrite <- mul_add_distr_l.
+    rewrite add_inv_r.
+    rewrite add_inv_r.
+    apply mul_0_r.
+  Qed.
+
+  Lemma neg_1_sqr (Hmul_assoc : mul_assoc) : - (1) * - (1) = 1.
+  Proof.
+    rewrite <- add_0_r at 1.
+    rewrite <- add_inv_r with (x := -(1)).
+    rewrite add_inv_involutive.
+    rewrite <- add_assoc.
+    rewrite <- mul_1_r with (x := -(1)) at 3.
+    rewrite <- mul_add_distr_l with (x := -(1)).
+    rewrite add_comm with (x := - (1)) (y := 1).
+    rewrite add_inv_r.
+    rewrite mul_0_r.
+    rewrite add_0_l.
+    reflexivity.
+  Qed.
 
   (* Definitions of even and odd parts for functions over a field *)
   Definition evenPart (f : F -> F) : F -> F := fun x => (f x + f (- x)) * / 2.
@@ -328,25 +480,6 @@ Module ApplyFiniteFieldModulo3.
     unfold evenPart, poly1.
     
   Qed. *)
-
-  (* Apply the theorems to the finite field modulo 3 *)
-  Compute (evenPart F F1 add mul add_inv inv poly1 F0).
-  (* F0 *)
-
-  Compute (oddPart F F1 add mul sub add_inv inv poly1 F0).
-  (* F0 *)
-
-  Compute (evenPart F F1 add mul add_inv inv poly1 F1).
-  (* F1 *)
-
-  Compute (oddPart F F1 add mul sub add_inv inv poly1 F1).
-  (* F1 *)
-
-  Compute (evenPart F F1 add mul add_inv inv poly1 F2).
-  (* F1 *)
-
-  Compute (oddPart F F1 add mul sub add_inv inv poly1 F2).
-  (* F2 *)
 
   (* Example to verify the sum of even and odd parts equals the original polynomial *)
   Example poly_even_odd_sum : forall x : F, poly1 x = add (evenPart F F1 add mul add_inv inv poly1 x) (oddPart F F1 add mul sub add_inv inv poly1 x).
