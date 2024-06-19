@@ -197,7 +197,7 @@ Section FiniteFieldModulo3.
       rewrite <- add_assoc.
       rewrite <- add_comm with (x := z) (y := - z).
       rewrite add_inv_r.
-      rewrite <- add_0_l.
+      rewrite add_0_l.
       reflexivity.
     - intros.
       rewrite H.
