@@ -453,7 +453,7 @@ Module ApplyFiniteFieldModulo3.
   (* Define a polynomial function f(x) = x^2 + x *)
   Definition poly1 (x : F) : F := (x * x) + x.
 
-  Lemma poly1EventPart (Hmul_comm : mul_comm F mul) (Hmul_assoc : mul_assoc F mul) (Hmul_inv_nonzero : mul_inv_nonzero F 1 inv) (x : F) : evenPart F 1 add mul add_inv inv poly1 x = x * x.
+  Lemma poly1EvenPart (Hmul_comm : mul_comm F mul) (Hmul_assoc : mul_assoc F mul) (Hmul_inv_nonzero : mul_inv_nonzero F 1 inv) (x : F) : evenPart F 1 add mul add_inv inv poly1 x = x * x.
   Proof.
     unfold evenPart, poly1.
     rewrite <- (mul_neg_1_inv F 0 1 add mul add_inv) at 1 2.
